@@ -18,6 +18,9 @@ Một ứng dụng di động thể hiện danh sách các tỉnh của Việt N
     - ViewModel
     - DataBinding
     - Room Persistence
+- Architecture
+    - Kiến trúc MVVM (View - DataBinding - ViewModel - Model)
+    - Repository Pattern
 - [Retrofit2](https://github.com/square/retrofit) - Thiết lập kết nối để lấy thông tin từ API.
 - [Moshi](https://github.com/square/moshi/) - Parse cấu trúc từ JSON sang Kotlin object, cụ thể là chuyển thành thông tin các tỉnh thành.
 - [Glide](https://github.com/bumptech/glide) - Hiện thị ảnh, sử dụng Glide thay cho [Coil](https://github.com/coil-kt/coil) vì Glide hiển thị ảnh trong lúc không có kết nối internet.
