@@ -6,9 +6,7 @@ Một ứng dụng di động thể hiện danh sách các tỉnh của Việt N
 
 ## Screenshots
 
-<img src="images/overview.png"/>
-
-<img src="images/province_detail.png"/>
+<img src="images/screenshot.gif"/>
 
 ## Tech stack & thư viện sử dụng
 
