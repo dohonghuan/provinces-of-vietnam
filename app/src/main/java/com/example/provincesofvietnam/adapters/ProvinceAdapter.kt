@@ -6,66 +6,68 @@ import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.provincesofvietnam.presentation.provincelist.OverviewFragmentDirections
 import com.example.provincesofvietnam.R
 import com.example.provincesofvietnam.databinding.ProvinceItemBinding
 import com.example.provincesofvietnam.domain.ProvinceDomain
 
-class ProvinceAdapter() : RecyclerView.Adapter<ProvinceViewHolder>() {
+class ProvinceAdapter(private val onClickListener: OnClickListener) :
+    ListAdapter<ProvinceDomain, ProvinceAdapter.ProvinceViewHolder>(DiffCallback) {
 
-    var provincesList: List<ProvinceDomain> = emptyList()
-        set(value) {
-            field = value
-            notifyDataSetChanged()
+    class ProvinceViewHolder(
+        private val viewDataBinding: ProvinceItemBinding
+    ): RecyclerView.ViewHolder(viewDataBinding.root) {
+
+        fun bind(province: ProvinceDomain, onClickListener: OnClickListener) {
+            viewDataBinding.province = province
+            if (province.divisionType != "tỉnh") {
+                viewDataBinding.provinceName.setTextColor(Color.RED)
+            } else {
+                viewDataBinding.provinceName.setTextColor(Color.BLACK)
+            }
+            itemView.setOnClickListener {
+                onClickListener.onClick(province)
+            }
+            viewDataBinding.executePendingBindings()
         }
+
+    }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): ProvinceViewHolder {
 
-        val withDataBinding: ProvinceItemBinding = DataBindingUtil.inflate(
-            LayoutInflater.from(parent.context),
-            ProvinceViewHolder.LAYOUT,
-            parent,
-            false
+        return ProvinceViewHolder(
+            ProvinceItemBinding.inflate(LayoutInflater.from(parent.context))
         )
-
-        return ProvinceViewHolder(withDataBinding).apply {
-            viewDataBinding.root.setOnClickListener {
-                val action = OverviewFragmentDirections.actionOverviewFragmentToProvinceFragment(
-                    codeId = viewDataBinding.province!!.code,
-                    provinceName = viewDataBinding.province!!.name
-                )
-                viewDataBinding.root.findNavController().navigate(action)
-            }
-        }
     }
 
     override fun onBindViewHolder(
         holder: ProvinceViewHolder,
         position: Int
     ) {
-        holder.viewDataBinding.also {
-            it.province = provincesList[position]
-            if (provincesList[position].divisionType != "tỉnh") {
-                it.provinceName.setTextColor(Color.RED)
-            } else {
-                it.provinceName.setTextColor(Color.BLACK)
-            }
+        val province = getItem(position)
+        holder.bind(province, onClickListener)
+    }
+
+    companion object DiffCallback : DiffUtil.ItemCallback<ProvinceDomain>() {
+        override fun areItemsTheSame(oldItem: ProvinceDomain, newItem: ProvinceDomain): Boolean {
+            return oldItem == newItem
         }
+
+        override fun areContentsTheSame(oldItem: ProvinceDomain, newItem: ProvinceDomain): Boolean {
+            return oldItem.code == newItem.code
+        }
+
     }
 
-    override fun getItemCount() = provincesList.size
-}
-
-class ProvinceViewHolder(val viewDataBinding: ProvinceItemBinding
-): RecyclerView.ViewHolder(viewDataBinding.root) {
-
-    companion object {
-        @LayoutRes
-        val LAYOUT = R.layout.province_item
+    class OnClickListener(
+        val clickListener: (province: ProvinceDomain) -> Unit
+    ) {
+        fun onClick(province: ProvinceDomain) = clickListener(province)
     }
-
 }

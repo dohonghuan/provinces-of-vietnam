@@ -1,9 +1,6 @@
 package com.example.provincesofvietnam.adapters
 
-import android.util.Log
-import android.view.View
 import android.widget.ImageView
-import androidx.core.net.toUri
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
 

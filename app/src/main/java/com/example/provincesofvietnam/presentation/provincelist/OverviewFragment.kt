@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.example.provincesofvietnam.ProvinceApplication
 import com.example.provincesofvietnam.R
 import com.example.provincesofvietnam.adapters.ProvinceAdapter
@@ -14,44 +15,65 @@ import com.example.provincesofvietnam.domain.ProvinceDomain
 
 class OverviewFragment : Fragment() {
 
+    private lateinit var binding: FragmentOverviewBinding
+
     private val viewModel: OverviewViewModel by viewModels {
         OverViewModelFactory((context?.applicationContext as ProvinceApplication).repository)
     }
-
-    private var viewModelAdapter: ProvinceAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        viewModel.provinceList.observe(viewLifecycleOwner,
-            Observer<List<ProvinceDomain>> { provinces ->
-            provinces?.apply {
-                viewModelAdapter?.provincesList = provinces
-            }
-        })
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        val binding: FragmentOverviewBinding = DataBindingUtil.inflate(
+        binding = DataBindingUtil.inflate(
             inflater,
             R.layout.fragment_overview,
             container,
             false
         )
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
 
-        viewModelAdapter = ProvinceAdapter()
-        binding.provincesGrid.adapter = viewModelAdapter
+        viewModel.navigateToSelectedProperty.observe(this.viewLifecycleOwner) {
+            it?.let {
+                navigateToProvinceDetail(it)
+                viewModel.displayPropertyDetailsComplete()
+            }
+        }
+        val viewModelAdapter = ProvinceAdapter(
+            ProvinceAdapter.OnClickListener(
+                clickListener = { province ->
+                    viewModel.displayPropertyDetails(province)
+                }
+            )
+        )
 
-        return binding.root
+        viewModel.provinceList.observe(this.viewLifecycleOwner, Observer<List<ProvinceDomain>> { province ->
+            province?.apply {
+                viewModelAdapter.submitList(province)
+            }
+        })
+
+        binding.provincesGrid.adapter = viewModelAdapter
+    }
+
+
+    private fun navigateToProvinceDetail(provinceDomain: ProvinceDomain) {
+        val direction = OverviewFragmentDirections.actionOverviewFragmentToProvinceFragment(
+            codeId = provinceDomain.code,
+            provinceName = provinceDomain.name
+        )
+        findNavController().navigate(direction)
     }
 }

@@ -24,5 +24,5 @@ object ProvinceApi {
         .addConverterFactory(MoshiConverterFactory.create(moshi))
         .build()
 
-    val retrofitService = retrofit.create(ProvinceApiService::class.java)
+    val retrofitService: ProvinceApiService = retrofit.create(ProvinceApiService::class.java)
 }

@@ -1,19 +1,14 @@
 package com.example.provincesofvietnam.repository
 
-import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
-import androidx.lifecycle.Transformations.map
 import com.example.provincesofvietnam.data.DatabaseProvince
 import com.example.provincesofvietnam.data.ProvinceDao
-import com.example.provincesofvietnam.data.ProvinceRoomDatabase
 import com.example.provincesofvietnam.data.asDomainModel
 import com.example.provincesofvietnam.domain.ProvinceDomain
 import com.example.provincesofvietnam.network.ProvinceApi
-import com.example.provincesofvietnam.network.ProvinceProperty
 import com.example.provincesofvietnam.network.asDatabaseModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
 class ProvinceRepository(private val provinceDao: ProvinceDao) {
